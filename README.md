@@ -1,23 +1,24 @@
 # MSAM: GBM Prognostication Model
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.43%2B-FF4B4B.svg?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![ORCID](https://img.shields.io/badge/ORCID-0009_0003_2640_3086-green.svg)](https://orcid.org/my-orcid?orcid=0009-0003-2640-3086)
+[![GitHub](https://img.shields.io/badge/GitHub-minibelfast-181717.svg?logo=github)](https://github.com/minibelfast)
+[![ResearchGate](https://img.shields.io/badge/ResearchGate-Xuanyu_Wang-00CCBB.svg?logo=researchgate)](https://www.researchgate.net/profile/Xuanyu-Wang-11/research)
+[![HuggingFace](https://img.shields.io/badge/HuggingFace-xuanyuwang-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/xuanyuwang)
 
 MSAM (Magnification-Aware Multi-Instance Attention Model) is a deep learning-based application for predicting glioma/GBM prognosis directly from whole-slide histopathology images (WSIs). The system computes a continuous slide-level MSAM score from WSIs and integrates it with clinical variables (**KPSscore, P53, ATRX**) in a Cox proportional hazards model to estimate individualized risk and survival.
 
 ## Key Features
-- **End-to-end WSI ingestion**: Supports multi-format WSIs (`.svs`, `.ndpi`, `.sdpc`) with thumbnail preview.
-- **Configurable patch feature encoders**: Supports multiple pretrained backbones (e.g., ResNet-50, UNI, CONCH; configurable via YAML).
-- **MSAM score inference**: Produces a slide-level MSAM risk score and attention maps for spatial visualization.
-- **Multimodal Cox prognostic model**: Combines MSAM with **KPSscore, P53, ATRX** to output hazard ratio and survival curve.
-- **Visualization & interpretability**: Risk heatmap, feature contribution plot (Cox coefficient-based), and survival probability curve.
-- **Caching**: Stores intermediate features to accelerate repeated inference on the same slide.
+
+- **Information Acquisition Module**: Processes multi-format WSIs (e.g., `.svs`, `.ndpi`, `.sdpc`) and clinical data (**KPSscore, P53, ATRX**).
+- **Image Processing & Feature Extraction**: Performs tissue segmentation, patching, and configurable feature encoding (e.g., ResNet-50, UNI, CONCH; set via YAML).
+- **Risk & Prognosis Prediction**: Produces a slide-level MSAM score and estimates individualized survival risk using a multivariable Cox model.
+- **Explainability**: Provides risk heatmaps and a feature contribution plot (Cox coefficient-based) for interpretation.
+- **Nomogram**: Displays a nomogram panel (static image, if provided under `pic/`).
 
 ## Prerequisites
+
 - Python 3.8 or higher
-- CUDA-enabled GPU is recommended for faster WSI feature extraction and inference
-- OpenSlide system libraries are required for `.svs/.ndpi` on most platforms
+- CUDA-enabled GPU is recommended for faster WSI processing and inference
 
 ## Installation
 
@@ -27,13 +28,13 @@ MSAM (Magnification-Aware Multi-Instance Attention Model) is a deep learning-bas
    cd MSAMapp
    ```
 
-2. **Create a virtual environment (recommended)**
+2. **Create a virtual environment (Optional but recommended)**
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate
    ```
 
-3. **Install dependencies**
+3. **Install the required dependencies**
    ```bash
    pip install -r requirements.txt
    ```
@@ -42,66 +43,41 @@ MSAM (Magnification-Aware Multi-Instance Attention Model) is a deep learning-bas
    - **Ubuntu/Debian**: `sudo apt-get install openslide-tools`
    - **CentOS/RedHat**: `sudo yum install openslide`
    - **macOS**: `brew install openslide`
-   - **Windows**: install OpenSlide binaries from https://openslide.org/download/
+   - **Windows**: download the latest binaries from https://openslide.org/download/
 
 ## Usage
 
-1. **Prepare model weights**
+1. **Start the Streamlit App**
 
-This repository does not ship large model checkpoints. Provide the required weights using either local files or environment variables:
-- WSI model checkpoint:
-  - Place at `weights/wsi_model.pth`, or set:
-    ```bash
-    export WSI_MODEL_PATH=/absolute/path/to/your_wsi_model.pth
-    ```
-- UNI / CONCH checkpoints (only if you select these encoders):
-  ```bash
-  export UNI_CKPT_PATH=/absolute/path/to/pytorch_model.bin
-  export CONCH_CKPT_PATH=/absolute/path/to/pytorch_model.bin
-  ```
-
-2. **Start the Streamlit app**
-   ```bash
-   streamlit run Home.py
-   ```
-
-3. **Run inference in the UI**
-   - Go to the **Analysis** page
-   - Upload a WSI (`.svs`, `.ndpi`, `.sdpc`)
-   - Input clinical variables (**KPSscore**, **P53**, **ATRX**)
-   - Click **Submit**
-
-4. **Interpreting results**
-   - **Raw WSI**: thumbnail preview of the uploaded slide
-   - **Risk map**: attention-based heatmap highlighting high-risk regions
-   - **Features Contribution**: Cox feature contribution plot relative to the training baseline
-   - **Survival Rate Plot**: predicted survival curve over time
-   - **Nomogram**: static nomogram panel (if provided under `pic/`)
-
-## Configuration
-
-The app reads a YAML config from `WSI_CONFIG_PATH` (default: `config/default.yaml`).
-
-Override config:
+From the root directory of the project, run:
 ```bash
-export WSI_CONFIG_PATH=/absolute/path/to/your_config.yaml
+streamlit run Home.py
 ```
 
-Other supported environment variables:
-- `COX_MODEL_PATH` (default: `./cox_model.pkl`)
-- `TRAIN_CSV_PATH` (default: `./9.1.dataset_train.csv`)
-- `WSI_MODEL_PATH` (default: `./weights/wsi_model.pth`)
+2. **Using the Application**
+
+- Navigate to the **Analysis** page via the sidebar.
+- **Upload a WSI Image**: upload a WSI (formats: `.svs`, `.ndpi`, `.sdpc`).
+- **Input Clinical Data**: select **KPSscore**, **P53**, and **ATRX**.
+- Click **Submit**.
+
+3. **Interpreting Results**
+
+- **Raw WSI**: view the thumbnail of the uploaded slide.
+- **Risk map**: observe the spatial regions associated with higher risk.
+- **Features Contribution**: inspect the contribution of MSAM/KPSscore/P53/ATRX in the Cox model.
+- **Survival Rate Plot**: view the predicted survival curve over time.
+- **Nomogram**: a graphical summary of the prognostic factors (if provided).
 
 ## Project Structure
-- `Home.py`: main entry point of the Streamlit app
-- `pages/`: Streamlit pages (main inference is in `pages/2_Analysis.py`)
-- `app_utils/`: schema inference utilities for clinical inputs
-- `components/`: shared UI components
-- `wsi_core/`, `vis_utils/`: WSI loading, segmentation, patching, and heatmap rendering
-- `models/`: encoder builders and model utilities
-- `part/`: MSAM modules (ASPP, EMA, etc.)
-- `config/`: GitHub-friendly default config
-- `weights/`: local weights directory (not tracked)
+
+- `Home.py`: main entry point for the Streamlit web application.
+- `pages/`: contains subpages for the application, including the Analysis logic (`pages/2_Analysis.py`).
+- `components/`, `vis_utils/`, `wsi_core/`, `utils/`: helper modules for visualization, WSI handling, and core pipeline logic.
+- `models/`, `part/`: deep learning modules and custom layers used in the pipeline.
+- `config/default.yaml`: GitHub-friendly default configuration file.
+- `cox_model.pkl` & `9.1.dataset_train.csv`: Cox weights and training schema used by the app.
+- `weights/`: place large model weights here (not tracked by git).
 
 ## Citation
 
@@ -110,9 +86,8 @@ If you find this project useful, please cite our manuscript:
 
 ## Acknowledgement
 
-We thank the investigators and consortia who generated and publicly shared WSIs and clinical data, including TCGA and external validation cohorts used in our study. We also acknowledge the open-source community for foundational libraries (PyTorch, OpenSlide, Streamlit).
+We thank the investigators and consortia who generated and publicly shared WSIs and clinical data, including TCGA and external validation cohorts used in our study.
 
 ## License
 
 This project is released under the MIT License. See [LICENSE](LICENSE).
-
