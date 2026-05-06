@@ -1,100 +1,118 @@
-# MSAMapp (GBM Prognostication)
+# MSAM: GBM Prognostication Model
 
-MSAMapp is a Streamlit web application for end-to-end prognosis inference from whole-slide histopathology images (WSIs) of glioma/GBM.
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.43%2B-FF4B4B.svg?logo=streamlit&logoColor=white)](https://streamlit.io/)
 
-It performs:
-- WSI upload (`.svs`, `.ndpi`, `.sdpc`)
-- Patch feature extraction (e.g., UNI / CONCH; configurable)
-- Slide-level MSAM score inference
-- Multimodal Cox inference with clinical variables (**KPSscore, P53, ATRX**)
-- Visualization: WSI thumbnail, attention heatmap, Cox feature contribution, survival curve
+MSAM (Magnification-Aware Multi-Instance Attention Model) is a deep learning-based application for predicting glioma/GBM prognosis directly from whole-slide histopathology images (WSIs). The system computes a continuous slide-level MSAM score from WSIs and integrates it with clinical variables (**KPSscore, P53, ATRX**) in a Cox proportional hazards model to estimate individualized risk and survival.
 
-## Repository layout
+## Key Features
+- **End-to-end WSI ingestion**: Supports multi-format WSIs (`.svs`, `.ndpi`, `.sdpc`) with thumbnail preview.
+- **Configurable patch feature encoders**: Supports multiple pretrained backbones (e.g., ResNet-50, UNI, CONCH; configurable via YAML).
+- **MSAM score inference**: Produces a slide-level MSAM risk score and attention maps for spatial visualization.
+- **Multimodal Cox prognostic model**: Combines MSAM with **KPSscore, P53, ATRX** to output hazard ratio and survival curve.
+- **Visualization & interpretability**: Risk heatmap, feature contribution plot (Cox coefficient-based), and survival probability curve.
+- **Caching**: Stores intermediate features to accelerate repeated inference on the same slide.
 
-- `Home.py`: Streamlit home page
-- `pages/2_Analysis.py`: main inference + visualization page
-- `pages/3_Tutorial.py`: tutorial page
-- `config/default.yaml`: default runtime config (relative paths, GitHub-friendly)
-- `cox_model.pkl`: Cox model (replace with your own if needed)
-- `9.1.dataset_train.csv`: training-data schema used to infer the clinical input fields (replace with your own schema if needed)
-- `weights/`: place model weights here (not tracked by git)
+## Prerequisites
+- Python 3.8 or higher
+- CUDA-enabled GPU is recommended for faster WSI feature extraction and inference
+- OpenSlide system libraries are required for `.svs/.ndpi` on most platforms
 
-## Quick start
+## Installation
 
-### 1) Create environment
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/MSAMapp.git
+   cd MSAMapp
+   ```
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+2. **Create a virtual environment (recommended)**
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
 
-### 2) Install system dependencies (Linux)
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-OpenSlide is required for `.svs/.ndpi`:
+4. **Install OpenSlide (for WSI reading)**
+   - **Ubuntu/Debian**: `sudo apt-get install openslide-tools`
+   - **CentOS/RedHat**: `sudo yum install openslide`
+   - **macOS**: `brew install openslide`
+   - **Windows**: install OpenSlide binaries from https://openslide.org/download/
 
-```bash
-sudo apt-get update
-sudo apt-get install -y openslide-tools
-```
+## Usage
 
-### 3) Provide model weights
+1. **Prepare model weights**
 
-This repository does not ship large model checkpoints.
+This repository does not ship large model checkpoints. Provide the required weights using either local files or environment variables:
+- WSI model checkpoint:
+  - Place at `weights/wsi_model.pth`, or set:
+    ```bash
+    export WSI_MODEL_PATH=/absolute/path/to/your_wsi_model.pth
+    ```
+- UNI / CONCH checkpoints (only if you select these encoders):
+  ```bash
+  export UNI_CKPT_PATH=/absolute/path/to/pytorch_model.bin
+  export CONCH_CKPT_PATH=/absolute/path/to/pytorch_model.bin
+  ```
 
-Set one of the following:
-- Put your WSI model checkpoint at `weights/wsi_model.pth`, or
-- Export an environment variable:
+2. **Start the Streamlit app**
+   ```bash
+   streamlit run Home.py
+   ```
 
-```bash
-export WSI_MODEL_PATH=/absolute/path/to/your_wsi_model.pth
-```
+3. **Run inference in the UI**
+   - Go to the **Analysis** page
+   - Upload a WSI (`.svs`, `.ndpi`, `.sdpc`)
+   - Input clinical variables (**KPSscore**, **P53**, **ATRX**)
+   - Click **Submit**
 
-If you use UNI / CONCH encoders, also provide their checkpoints when required:
-
-```bash
-export UNI_CKPT_PATH=/absolute/path/to/pytorch_model.bin
-export CONCH_CKPT_PATH=/absolute/path/to/pytorch_model.bin
-```
-
-### 4) Run the app
-
-```bash
-streamlit run Home.py
-```
-
-Open the Analysis page:
-1. Upload a WSI file
-2. Select clinical variables (KPSscore, P53, ATRX)
-3. Click **Submit**
+4. **Interpreting results**
+   - **Raw WSI**: thumbnail preview of the uploaded slide
+   - **Risk map**: attention-based heatmap highlighting high-risk regions
+   - **Features Contribution**: Cox feature contribution plot relative to the training baseline
+   - **Survival Rate Plot**: predicted survival curve over time
+   - **Nomogram**: static nomogram panel (if provided under `pic/`)
 
 ## Configuration
 
-MSAMapp reads a YAML config from `WSI_CONFIG_PATH` (default: `config/default.yaml`).
+The app reads a YAML config from `WSI_CONFIG_PATH` (default: `config/default.yaml`).
 
-Override the default config:
-
+Override config:
 ```bash
 export WSI_CONFIG_PATH=/absolute/path/to/your_config.yaml
 ```
 
-The app also supports:
+Other supported environment variables:
 - `COX_MODEL_PATH` (default: `./cox_model.pkl`)
 - `TRAIN_CSV_PATH` (default: `./9.1.dataset_train.csv`)
+- `WSI_MODEL_PATH` (default: `./weights/wsi_model.pth`)
 
-## Notes on clinical inputs
+## Project Structure
+- `Home.py`: main entry point of the Streamlit app
+- `pages/`: Streamlit pages (main inference is in `pages/2_Analysis.py`)
+- `app_utils/`: schema inference utilities for clinical inputs
+- `components/`: shared UI components
+- `wsi_core/`, `vis_utils/`: WSI loading, segmentation, patching, and heatmap rendering
+- `models/`: encoder builders and model utilities
+- `part/`: MSAM modules (ASPP, EMA, etc.)
+- `config/`: GitHub-friendly default config
+- `weights/`: local weights directory (not tracked)
 
-The Cox input feature set is inferred from `TRAIN_CSV_PATH`.
-By default, the app expects:
-- `MSAM` (computed from the uploaded slide)
-- `KPSscore` (user input)
-- `P53` (user input, 0/1)
-- `ATRX` (user input, 0/1)
+## Citation
 
-If your Cox model uses a different schema, update `TRAIN_CSV_PATH` accordingly.
+If you find this project useful, please cite our manuscript:
+> **Development of a magnification-adaptive multiple instance learning framework with cross-cohort continual learning**
 
-## Disclaimer
+## Acknowledgement
 
-This software is provided for research use only and is not a medical device.
-Any clinical use must be validated and approved according to local regulations.
+We thank the investigators and consortia who generated and publicly shared WSIs and clinical data, including TCGA and external validation cohorts used in our study. We also acknowledge the open-source community for foundational libraries (PyTorch, OpenSlide, Streamlit).
+
+## License
+
+This project is released under the MIT License. See [LICENSE](LICENSE).
 
