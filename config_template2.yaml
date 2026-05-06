@@ -1,0 +1,75 @@
+data_arguments:
+  data_dir: ./slide
+  data_dir_key: source
+  label_dict:
+    High: 0
+    Low: 3
+    Middlehigh: 1
+    Middlelow: 2
+  preset: ./presets/tcga.csv
+  process_list: ./heatmap_demo_dataset.csv
+  slide_ext: .svs
+encoder_arguments:
+  model_name: uni_v1
+  target_img_size: 224
+exp_arguments:
+  batch_size: 512
+  n_classes: 4
+  production_save_dir: ./output
+  raw_save_dir: ./output
+  save_exp_code: MSAM
+heatmap_arguments:
+  alpha: 0.4
+  binarize: false
+  binary_thresh: -1
+  blank_canvas: false
+  blur: false
+  calc_heatmap: false
+  cmap: jet
+  custom_downsample: 1
+  save_ext: jpg
+  save_orig: true
+  use_center_shift: true
+  use_ref_scores: true
+  use_roi: false
+  vis_level: 1
+model_arguments:
+  ckpt_path: ./weights/wsi_model.pth
+  drop_out: 0.0
+  embed_dim: 1024
+  initiate_fn: initiate_model
+  model_size: small
+  model_type: clam_sb
+  n_classes: 4
+patching_arguments:
+  custom_downsample: 1
+  overlap: 0.5
+  patch_level: 0
+  patch_size: 256
+sample_arguments:
+  samples:
+  - k: 15
+    mode: topk
+    name: topk_high_attention
+    sample: true
+    seed: 1
+# 添加分割参数配置
+segmentation_arguments:
+  seg_level: -1
+  sthresh: 8
+  sthresh_up: 255
+  mthresh: 7
+  close: 4
+  use_otsu: false
+# 添加过滤参数配置
+filter_arguments:
+  a_t: 16
+  a_h: 4
+  max_n_holes: 8
+
+Coxmodel_arguments:
+  Coxmodel_path: ./cox_model.pkl
+
+traindata_arguments:
+  train_data: ./9.1.dataset_train.csv
+

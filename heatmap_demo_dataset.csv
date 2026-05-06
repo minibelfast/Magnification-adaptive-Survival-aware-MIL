@@ -1,0 +1,2 @@
+slide_id,label,process,status,seg_level,sthresh,mthresh,close,use_otsu,keep_ids,exclude_ids,a_t,a_h,max_n_holes,vis_level,line_thickness,use_padding,contour_fn,bag_size,Pred_0,p_0,Pred_1,p_1,Pred_2,p_2,Pred_3,p_3
+slide,High,1,tbp,-1,8,7,4,False,none,none,16.0,4.0,8,-1,100,True,four_pt,5632.0,Low,0.999549925327301,Middlelow,0.00028057434246875346,High,0.00016947822587098926,Middlehigh,2.988751024446401e-09
