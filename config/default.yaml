@@ -1,0 +1,42 @@
+data_arguments:
+  data_dir: ./slide
+  data_dir_key: source
+  preset: ./presets/tcga.csv
+  process_list: ./heatmap_demo_dataset.csv
+  slide_ext: .svs
+encoder_arguments:
+  model_name: uni_v1
+  target_img_size: 224
+exp_arguments:
+  batch_size: 512
+  n_classes: 4
+  raw_save_dir: ./output
+  production_save_dir: ./output
+  save_exp_code: MSAM
+heatmap_arguments:
+  alpha: 0.4
+  cmap: jet
+  use_center_shift: true
+  custom_downsample: 1
+segmentation_arguments:
+  seg_level: -1
+  sthresh: 8
+  sthresh_up: 255
+  mthresh: 7
+  close: 4
+  use_otsu: false
+filter_arguments:
+  a_t: 16
+  a_h: 4
+  max_n_holes: 8
+patching_arguments:
+  custom_downsample: 1
+  overlap: 0.5
+  patch_level: 0
+  patch_size: 256
+model_arguments:
+  ckpt_path: ./weights/wsi_model.pth
+  model_type: clam_sb
+  model_size: small
+  drop_out: 0.0
+  embed_dim: 1024
