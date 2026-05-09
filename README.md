@@ -1,9 +1,5 @@
 # MSAM: GBM Prognostication Model
 
-[![ORCID](https://img.shields.io/badge/ORCID-0009_0003_2640_3086-green.svg)](https://orcid.org/my-orcid?orcid=0009-0003-2640-3086)
-[![GitHub](https://img.shields.io/badge/GitHub-minibelfast-181717.svg?logo=github)](https://github.com/minibelfast)
-[![ResearchGate](https://img.shields.io/badge/ResearchGate-Xuanyu_Wang-00CCBB.svg?logo=researchgate)](https://www.researchgate.net/profile/Xuanyu-Wang-11/research)
-[![HuggingFace](https://img.shields.io/badge/HuggingFace-xuanyuwang-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/xuanyuwang)
 
 MSAM (Magnification-Aware Multi-Instance Attention Model) is a deep learning-based application for predicting glioma/GBM prognosis directly from whole-slide histopathology images (WSIs). The system computes a continuous slide-level MSAM score from WSIs and integrates it with clinical variables (**KPSscore, P53, ATRX**) in a Cox proportional hazards model to estimate individualized risk and survival.
 
