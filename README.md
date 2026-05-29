@@ -78,7 +78,7 @@ streamlit run Home.py
 ## Citation
 
 If you find this project useful, please cite our manuscript:
-> **Development of a magnification-adaptive multiple instance learning framework with cross-cohort continual learning**
+> **Scale-sensitive histopathologic features enable robust prognostic stratification in glioblastoma**
 
 ## Acknowledgement
 
